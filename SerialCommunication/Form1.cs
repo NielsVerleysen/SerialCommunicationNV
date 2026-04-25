@@ -200,7 +200,7 @@ namespace SerialCommunication
             {
                 if (serialPortArduino.IsOpen)
                 {
-                    string commando = String.Format("set pmw9 {0}", trackBarPWM9.Value);
+                    string commando = String.Format("set pwm9 {0}", trackBarPWM9.Value);
                     serialPortArduino.WriteLine(commando);
                 }
 
@@ -215,6 +215,49 @@ namespace SerialCommunication
             }
 
 
+        }
+
+        private void trackBarPWM10_Scroll(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serialPortArduino.IsOpen)
+                {
+                    string commando = String.Format("set pwm10 {0}", trackBarPWM10.Value);
+                    serialPortArduino.WriteLine(commando);
+                }
+
+            }
+            catch (Exception exception)
+            {
+                labelStatus.Text = "Error: " + exception.Message;
+                serialPortArduino.Close();
+                radioButtonVerbonden.Checked = false;
+                buttonConnect.Text = "Connect";
+
+            }
+
+        }
+
+        private void trackBarPWM11_Scroll(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serialPortArduino.IsOpen)
+                {
+                    string commando = String.Format("set pwm11 {0}", trackBarPWM11.Value);
+                    serialPortArduino.WriteLine(commando);
+                }
+
+            }
+            catch (Exception exception)
+            {
+                labelStatus.Text = "Error: " + exception.Message;
+                serialPortArduino.Close();
+                radioButtonVerbonden.Checked = false;
+                buttonConnect.Text = "Connect";
+
+            }
         }
     }
 }
