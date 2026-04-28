@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -264,6 +265,7 @@ namespace SerialCommunication
         {
             timerOefening3.Enabled = tabControl.SelectedIndex == 3;
             timerOefening4.Enabled = tabControl.SelectedIndex == 4;
+            timerOefening5.Enabled = tabControl.SelectedIndex == 5;
         }
 
         private void timerOefening3_Tick(object sender, EventArgs e)
@@ -320,6 +322,63 @@ namespace SerialCommunication
                     antwoord = antwoord.TrimEnd();
                     antwoord = antwoord.Substring(4);
                     labelAnalog0.Text = antwoord;   
+
+                }
+
+            }
+            catch (Exception exception)
+            {
+                labelStatus.Text = "Error: " + exception.Message;
+                serialPortArduino.Close();
+                radioButtonVerbonden.Checked = false;
+                buttonConnect.Text = "Connect";
+
+            }
+
+        }
+
+        private void timerOefening5_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                if (serialPortArduino.IsOpen)
+                {
+                    //potentiometer
+                    serialPortArduino.ReadExisting();
+                    string commandoa0 = "get a0";
+                    serialPortArduino.WriteLine(commandoa0);
+                    string antwoorda0 = serialPortArduino.ReadLine();
+                    antwoorda0 = antwoorda0.TrimEnd();
+                    antwoorda0 = antwoorda0.Substring(4);
+                    double waardea0 = double.Parse(antwoorda0);
+
+                    //herschalen
+                    double gewenstetemperatuur = (waardea0 * (40.0 / 1023.0)) + 5;
+                    labelGewensteTemp.Text = string.Format("{0:0.0} °C", gewenstetemperatuur);
+
+                    //LM35
+                    string commandoa1 = "get a1";
+                    serialPortArduino.WriteLine(commandoa1);
+                    string antwoorda1 = serialPortArduino.ReadLine();
+                    antwoorda1 = antwoorda1.TrimEnd();
+                    antwoorda1 = antwoorda1.Substring(4);
+                    double waardea1 = double.Parse(antwoorda1);
+
+                    //herschalen
+                    double huidigetemperatuur = waardea1 * (500.0 / 1023.0);
+                    labelHuidigeTemp.Text = string.Format("{0:0.0} °C", huidigetemperatuur);
+
+                    //led
+                    if(huidigetemperatuur < gewenstetemperatuur)
+                    {
+                        serialPortArduino.WriteLine("set d2 high");
+                    }
+                    else
+                    {
+                        serialPortArduino.WriteLine("set d2 low");
+
+                    }
+
 
                 }
 
